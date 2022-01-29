@@ -1,15 +1,9 @@
-import React, { Component } from "react";
+import React from "react";
 import propTypes from "prop-types";
 import { LoadMoreBtn, Wrapper } from "./Button.styled";
 import { BtnLoader } from "../Loader/Loader";
 
-class Button extends Component {
-  state = {
-    isLoading: false,
-  };
-
-  render() {
-    const { data, onClick, endOfList, status } = this.props;
+const Button = ({ data, onClick, endOfList, status }) => {
 
     return (
       <>
@@ -41,7 +35,6 @@ class Button extends Component {
       </>
     );
   }
-}
 
 
 Button.propTypes = {

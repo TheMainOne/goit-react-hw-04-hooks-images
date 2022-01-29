@@ -1,54 +1,50 @@
-import React, { Component } from "react";
-import propTypes from "prop-types";
-import { ModalWindow, Overlay } from "./Modal.styled";
+import React, { useState, useEffect, useCallback } from 'react';
+import propTypes from 'prop-types';
+import { ModalWindow, Overlay } from './Modal.styled';
 
-class Modal extends Component {
-  state = {
-    item: {},
-    showModal: false,
-  };
+const Modal = ({ data, id, onModalClose, onModalShow }) => {
+  const [item, setItem] = useState({});
+  const [showModal, setShowModal] = useState(false);
 
-  onCloseModal = (event) => {
-    if (event.code === "Escape") {
-      this.setState({ showModal: false });
-      window.removeEventListener("keydown", this.onCloseModal);
+  const onCloseModal = useCallback(event => {
+    if (event.code === 'Escape') {
+      setShowModal(false);
+      window.removeEventListener('keydown', onCloseModal);
     }
-  };
+  }, []);
 
-  onBackdropClickCloseModal = (event) => {
+  const onBackdropClickCloseModal = useCallback(event => {
     if (event.target.childNodes.length === 1) {
-      this.setState({ showModal: false });
-      window.removeEventListener("click", this.onBackdropClickCloseModal);
+      setShowModal(false);
+      window.removeEventListener('click', onBackdropClickCloseModal);
     }
-  };
+  }, []);
 
-  componentDidUpdate(prevProps) {
-    const { data, id } = this.props;
-    if (prevProps.id !== this.props.id) {
-      this.setState({
-        item: data.find((item) => item.webformatURL === id),
-        showModal: true,
-      });
-      window.addEventListener("keydown", this.onCloseModal);
-      window.addEventListener("click", this.onBackdropClickCloseModal);
+  useEffect(() => {
+    const neededItem = data.find(item => item.webformatURL === id);
+    const hasId = id;
+    console.log('useEffect runs');
+
+    if (hasId !== '') {
+      setItem(neededItem);
+      setShowModal(true);
+      window.addEventListener('keydown', onCloseModal);
+      window.addEventListener('click', onBackdropClickCloseModal);
     }
-  }
+  }, [data, id, onBackdropClickCloseModal, onCloseModal]);
 
-  render() {
-    const { item, showModal } = this.state;
-    return (
-      <>
-        {showModal && (
-          <Overlay className="overlay">
-            <ModalWindow className="modal">
-              <img src={item.largeImageURL} alt={item.tags} />
-            </ModalWindow>
-          </Overlay>
-        )}
-      </>
-    );
-  }
-}
+  return (
+    <>
+      {showModal && (
+        <Overlay className="overlay">
+          <ModalWindow className="modal">
+            <img src={item.largeImageURL} alt={item.tags} />
+          </ModalWindow>
+        </Overlay>
+      )}
+    </>
+  );
+};
 
 Modal.propTypes = {
   data: propTypes.arrayOf(
@@ -65,3 +61,51 @@ Modal.propTypes = {
 };
 
 export default Modal;
+
+// class Modal extends Component {
+//   state = {
+//     item: {},
+//     showModal: false,
+//   };
+
+//   onCloseModal = (event) => {
+//     if (event.code === "Escape") {
+//       this.setState({ showModal: false });
+//       window.removeEventListener("keydown", this.onCloseModal);
+//     }
+//   };
+
+//   onBackdropClickCloseModal = (event) => {
+//     if (event.target.childNodes.length === 1) {
+//       this.setState({ showModal: false });
+//       window.removeEventListener("click", this.onBackdropClickCloseModal);
+//     }
+//   };
+
+//   componentDidUpdate(prevProps) {
+//     const { data, id } = this.props;
+//     if (prevProps.id !== this.props.id) {
+//       this.setState({
+//         item: data.find((item) => item.webformatURL === id),
+//         showModal: true,
+//       });
+//       window.addEventListener("keydown", this.onCloseModal);
+//       window.addEventListener("click", this.onBackdropClickCloseModal);
+//     }
+//   }
+
+//   render() {
+//     const { item, showModal } = this.state;
+//     return (
+//       <>
+//         {showModal && (
+//           <Overlay className="overlay">
+//             <ModalWindow className="modal">
+//               <img src={item.largeImageURL} alt={item.tags} />
+//             </ModalWindow>
+//           </Overlay>
+//         )}
+//       </>
+//     );
+//   }
+// }
