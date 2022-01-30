@@ -1,14 +1,9 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import propTypes from 'prop-types';
 import { ModalWindow, Overlay } from './Modal.styled';
 
 const Modal = ({ image, onModalClose, onModalShow }) => {
   const [showModal, setShowModal] = useState(false);
-   const prevCountRef = useRef();
-  useEffect(() => {
-    prevCountRef.current = image;
-  });
-  const prevImage = prevCountRef.current;
 
   const onCloseModal = useCallback(event => {
     if (event.code === 'Escape') {
@@ -27,7 +22,7 @@ const Modal = ({ image, onModalClose, onModalShow }) => {
   useEffect(() => {
     if (!image) {
       return;
-    } 
+    }
 
     setShowModal(true);
     window.addEventListener('keydown', onCloseModal);

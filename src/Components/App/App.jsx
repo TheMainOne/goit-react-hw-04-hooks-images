@@ -76,7 +76,11 @@ const App = () => {
 
   const onImageClick = event => {
     if (event.target.nodeName === 'IMG') {
-      setImage({src: event.target.src, large: event.target.sizes, tags: event.target.alt});
+      setImage({
+        src: event.target.src,
+        large: event.target.sizes,
+        tags: event.target.alt,
+      });
     }
   };
 
