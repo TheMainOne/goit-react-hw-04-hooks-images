@@ -1,10 +1,15 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import propTypes from 'prop-types';
 import { ModalWindow, Overlay } from './Modal.styled';
 
 const Modal = ({ data, id, onModalClose, onModalShow }) => {
   const [item, setItem] = useState({});
   const [showModal, setShowModal] = useState(false);
+  const prevCountRef = useRef();
+  useEffect(() => {
+    prevCountRef.current = id;
+  });
+  const prevId = prevCountRef.current;
 
   const onCloseModal = useCallback(event => {
     if (event.code === 'Escape') {
@@ -21,15 +26,17 @@ const Modal = ({ data, id, onModalClose, onModalShow }) => {
   }, []);
 
   useEffect(() => {
-    const neededItem = data.find(item => item.webformatURL === id);
-    const hasId = id;
+    if (!id) {
+      return;
+    }
+    
+  const neededItem = data.find(item => item.webformatURL === id);
 
-    if (hasId !== '') {
+    
       setItem(neededItem);
       setShowModal(true);
       window.addEventListener('keydown', onCloseModal);
-      window.addEventListener('click', onBackdropClickCloseModal);
-    }
+      window.addEventListener('click', onBackdropClickCloseModal)
   }, [data, id, onBackdropClickCloseModal, onCloseModal]);
 
   return (

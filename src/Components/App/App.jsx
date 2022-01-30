@@ -34,7 +34,8 @@ const App = () => {
           setData(prevData => [...prevData, ...response]);
           setStatus('resolved');
           setCounter(counter + 1);
-        }).catch((error) => console.log(error.message));
+        })
+        .catch(error => console.log(error.message));
     }
   }, [counter, filter, prevFilter]);
 
@@ -74,6 +75,7 @@ const App = () => {
 
   const onImageClick = event => {
     if (event.target.nodeName === 'IMG') {
+
       setId(event.target.src);
     }
   };
