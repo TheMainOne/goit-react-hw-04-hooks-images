@@ -13,7 +13,7 @@ const App = () => {
   const [data, setData] = useState([]);
   let [counter, setCounter] = useState(1);
   const [status, setStatus] = useState('idle');
-  const [id, setId] = useState('');
+  const [image, setImage] = useState(false);
   const [endOfList, setEndOfList] = useState(false);
   const prevCountRef = useRef();
   useEffect(() => {
@@ -41,13 +41,14 @@ const App = () => {
 
   const onHandleSubmit = event => {
     event.preventDefault();
-    setStatus('pending');
     const inputValue = event.target.elements.input.value;
     const form = event.target;
     const notify = () => toast.error('Please enter a search query');
 
     if (inputValue) {
+      setStatus('pending');
       setData([]);
+      setImage(false);
       setFilter(inputValue);
       setEndOfList(false);
       setCounter((counter = 1));
@@ -75,8 +76,7 @@ const App = () => {
 
   const onImageClick = event => {
     if (event.target.nodeName === 'IMG') {
-
-      setId(event.target.src);
+      setImage({src: event.target.src, large: event.target.sizes, tags: event.target.alt});
     }
   };
 
@@ -113,7 +113,7 @@ const App = () => {
           status={status}
         />
         <Toaster position="top-right" />
-        {data && <Modal data={data} id={id} />}
+        {data && <Modal image={image} />}
       </>
     );
   }

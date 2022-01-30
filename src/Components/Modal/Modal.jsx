@@ -2,14 +2,13 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import propTypes from 'prop-types';
 import { ModalWindow, Overlay } from './Modal.styled';
 
-const Modal = ({ data, id, onModalClose, onModalShow }) => {
-  const [item, setItem] = useState({});
+const Modal = ({ image, onModalClose, onModalShow }) => {
   const [showModal, setShowModal] = useState(false);
-  const prevCountRef = useRef();
+   const prevCountRef = useRef();
   useEffect(() => {
-    prevCountRef.current = id;
+    prevCountRef.current = image;
   });
-  const prevId = prevCountRef.current;
+  const prevImage = prevCountRef.current;
 
   const onCloseModal = useCallback(event => {
     if (event.code === 'Escape') {
@@ -26,25 +25,21 @@ const Modal = ({ data, id, onModalClose, onModalShow }) => {
   }, []);
 
   useEffect(() => {
-    if (!id) {
+    if (!image) {
       return;
-    }
-    
-  const neededItem = data.find(item => item.webformatURL === id);
+    } 
 
-    
-      setItem(neededItem);
-      setShowModal(true);
-      window.addEventListener('keydown', onCloseModal);
-      window.addEventListener('click', onBackdropClickCloseModal)
-  }, [data, id, onBackdropClickCloseModal, onCloseModal]);
+    setShowModal(true);
+    window.addEventListener('keydown', onCloseModal);
+    window.addEventListener('click', onBackdropClickCloseModal);
+  }, [image, onBackdropClickCloseModal, onCloseModal]);
 
   return (
     <>
       {showModal && (
         <Overlay className="overlay">
           <ModalWindow className="modal">
-            <img src={item.largeImageURL} alt={item.tags} />
+            <img src={image.large} alt={image.tags} />
           </ModalWindow>
         </Overlay>
       )}
@@ -61,7 +56,6 @@ Modal.propTypes = {
       previewURL: propTypes.string.isRequired,
     })
   ),
-  id: propTypes.string,
   closeModal: propTypes.func,
   onModalShow: propTypes.func,
 };
