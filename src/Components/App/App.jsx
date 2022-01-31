@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect} from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import Searchbar from './Searchbar/Searchbar';
 import ImageGallery from '../ImageGallery/ImageGallery';
@@ -9,35 +9,26 @@ import GlobalStyle from './GlobalStyles';
 import { fetchImagesWithQuery } from '../API/services';
 
 const App = () => {
-  const [filter, setFilter] = useState('');
+  const [query, setQuery] = useState('');
   const [data, setData] = useState([]);
   let [counter, setCounter] = useState(1);
   const [status, setStatus] = useState('idle');
   const [image, setImage] = useState(false);
   const [endOfList, setEndOfList] = useState(false);
-  const prevCountRef = useRef();
-  useEffect(() => {
-    prevCountRef.current = filter;
-  });
-  const prevFilter = prevCountRef.current;
 
   useEffect(() => {
-    if (filter === '') {
+    if (query === '') {
       return;
     }
 
-    if (prevFilter !== filter) {
-      setStatus('pending');
+    setStatus('pending');
 
-      fetchImagesWithQuery(filter, counter)
+      fetchImagesWithQuery(query, counter)
         .then(response => {
           setData(prevData => [...prevData, ...response]);
-          setStatus('resolved');
-          setCounter(counter + 1);
         })
-        .catch(error => console.log(error.message));
-    }
-  }, [counter, filter, prevFilter]);
+        .catch(error => console.log(error.message)).finally(() => setStatus('resolved'));
+  }, [counter, query]);
 
   const onHandleSubmit = event => {
     event.preventDefault();
@@ -49,7 +40,7 @@ const App = () => {
       setStatus('pending');
       setData([]);
       setImage(false);
-      setFilter(inputValue);
+      setQuery(inputValue);
       setEndOfList(false);
       setCounter((counter = 1));
 
@@ -57,21 +48,6 @@ const App = () => {
     } else {
       notify();
     }
-  };
-
-  const onButtonClick = () => {
-    setStatus('load');
-    setCounter(counter + 1);
-
-    fetchImagesWithQuery(filter, counter).then(response => {
-      if (response.length === 0) {
-        setEndOfList(true);
-      }
-
-      setData([...data, ...response]);
-      setCounter(counter + 1);
-      setStatus('resolved');
-    });
   };
 
   const onImageClick = event => {
@@ -83,44 +59,23 @@ const App = () => {
       });
     }
   };
-
-  if (status === 'idle') {
-    return (
-      <>
-        <GlobalStyle />
-        <Searchbar onSubmit={onHandleSubmit} />
-        <Toaster position="top-right" />
-      </>
-    );
-  }
-
-  if (status === 'pending') {
-    return (
-      <>
-        <GlobalStyle />
-        <Searchbar onSubmit={onHandleSubmit} />
-        <Loader />
-      </>
-    );
-  }
-
-  if (status === 'resolved' || status === 'load') {
+ 
     return (
       <>
         <GlobalStyle />
         <Searchbar onSubmit={onHandleSubmit} />
         <ImageGallery data={data} onImageClick={onImageClick} />
-        <Button
+        {status === 'pending' ?  <Loader /> : null}
+        {data.length > 0 ? (<Button
           data={data}
-          onClick={onButtonClick}
+          onClick={() => setCounter(prev => prev + 1)}
           endOfList={endOfList}
           status={status}
-        />
+        />) : (null)}
         <Toaster position="top-right" />
         {data && <Modal image={image} />}
       </>
     );
-  }
 };
 
 export default App;

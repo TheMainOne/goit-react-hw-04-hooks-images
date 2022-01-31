@@ -13,7 +13,7 @@ const Loader = () => {
 export const BtnLoader = () => {
    return (
     <LoaderStyles>
-      <TailSpin heigth={50} width={50} color="grey" ariaLabel="loading" />
+      <TailSpin heigth={30} width={30} color="#00BFFF" ariaLabel="loading" />
     </LoaderStyles>
   );
 }
