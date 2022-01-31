@@ -8,14 +8,13 @@ const Modal = ({ image, onModalClose, onModalShow }) => {
   const onCloseModal = useCallback(event => {
     if (event.code === 'Escape') {
       setShowModal(false);
-      window.removeEventListener('keydown', onCloseModal);
     }
   }, []);
 
-  const onBackdropClickCloseModal = useCallback(event => {
-    if (event.target.childNodes.length === 1) {
+  const onBackdropClick = useCallback(event => {
+    if (event.currentTarget === event.target) {
       setShowModal(false);
-      window.removeEventListener('click', onBackdropClickCloseModal);
+      window.removeEventListener('click', onBackdropClick);
     }
   }, []);
 
@@ -26,13 +25,16 @@ const Modal = ({ image, onModalClose, onModalShow }) => {
 
     setShowModal(true);
     window.addEventListener('keydown', onCloseModal);
-    window.addEventListener('click', onBackdropClickCloseModal);
-  }, [image, onBackdropClickCloseModal, onCloseModal]);
+
+    return () => {
+      window.removeEventListener('keydown', onCloseModal);
+    };
+  }, [image, onCloseModal]);
 
   return (
     <>
       {showModal && (
-        <Overlay className="overlay">
+        <Overlay className="overlay" onClick={onBackdropClick}>
           <ModalWindow className="modal">
             <img src={image.large} alt={image.tags} />
           </ModalWindow>
