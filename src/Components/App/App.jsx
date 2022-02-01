@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import Searchbar from './Searchbar/Searchbar';
 import ImageGallery from '../ImageGallery/ImageGallery';
@@ -23,11 +23,19 @@ const App = () => {
 
     setStatus('pending');
 
-      fetchImagesWithQuery(query, counter)
-        .then(response => {
-          setData(prevData => [...prevData, ...response]);
-        })
-        .catch(error => console.log(error.message)).finally(() => setStatus('resolved'));
+    fetchImagesWithQuery(query, counter)
+      .then(response => {
+        setData(prevData => [...prevData, ...response]);
+
+        if (counter !== 1) {
+          window.scrollTo({
+            top: document.documentElement.scrollHeight,
+            behavior: 'smooth',
+          });
+        }
+      })
+      .catch(error => console.log(error.message))
+      .finally(() => setStatus('resolved'));
   }, [counter, query]);
 
   const onHandleSubmit = event => {
@@ -59,23 +67,25 @@ const App = () => {
       });
     }
   };
- 
-    return (
-      <>
-        <GlobalStyle />
-        <Searchbar onSubmit={onHandleSubmit} />
-        <ImageGallery data={data} onImageClick={onImageClick} />
-        {status === 'pending' ?  <Loader /> : null}
-        {data.length > 0 ? (<Button
+
+  return (
+    <>
+      <GlobalStyle />
+      <Searchbar onSubmit={onHandleSubmit} />
+      <ImageGallery data={data} onImageClick={onImageClick} />
+      {status === 'pending' ? <Loader /> : null}
+      {data.length > 0 ? (
+        <Button
           data={data}
           onClick={() => setCounter(prev => prev + 1)}
           endOfList={endOfList}
           status={status}
-        />) : (null)}
-        <Toaster position="top-right" />
-        {data && <Modal image={image} />}
-      </>
-    );
+        />
+      ) : null}
+      <Toaster position="top-right" />
+      {data && <Modal image={image} />}
+    </>
+  );
 };
 
 export default App;
